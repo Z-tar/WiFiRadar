@@ -1,66 +1,90 @@
-# WiFi Radar (Wi-Fi 深度全息频谱雷达)
+# WiFi Radar
 
-> 📡 **macOS 原生 120Hz 全息频谱感知、信道拓扑雷达与射频分析工具**  
-> 采用 **Swift 6 + SwiftUI + CoreWLAN** 纯原生构建，1:1 像素级复刻 Safari 统一工具栏，零外部第三方依赖。
+> **English** | [中文](#中文)
 
----
-
-## ✨ 核心特性 (Key Features)
-
-- **⚡ 120Hz ProMotion 动态物理弹簧频谱**：
-  - 基于真实 IEEE 802.11 射频抛物线衰减函数实时渲染。
-  - 动态 RSSI 物理动量阻尼回弹，支持 2.4 GHz、5.0 GHz 与 6.0 GHz（Wi-Fi 6E/7）多频段无缝切换。
-- **🧭 1:1 像素级 Safari 统一沉浸式顶栏**：
-  - 深度定制 `NSToolbar`，红黄绿红绿灯完美对齐。
-  - 药丸切换器 `[ 频谱图 | 数据列表 | 混合分屏 ]`、高对比度搜索框、历史记录、扫描与全息侧边抽屉。
-- **📊 广播报文全息解析**：
-  - 深度扫描 BSSID、信道频宽（20/40/80/160 MHz）、信噪比 (SNR)、噪声基底 (Noise Floor)。
-  - 解析 Wi-Fi 协议代际（Wi-Fi 4 / 5 / 6 / 6E / 7）与加密类型（WPA2 / WPA3 SAE）。
-  - 国别码 Emoji 自动解析（🇨🇳 / 🇺🇸 / 🇯🇵 等）。
-- **💾 窗口与分栏尺寸记忆**：
-  - 双层持久化机制（`NSWindow.setFrameAutosaveName` + `AppStorage`），无缝保持用户调整后的窗口、侧边栏及右侧抽屉宽度。
-- **📤 全量数据导出**：
-  - 支持一键导出标准化 CSV 格式与完整原始遥测 JSON 报文。
+A native macOS Wi-Fi scanner and channel spectrum analyzer built with Swift, SwiftUI, and CoreWLAN.
 
 ---
 
-## 🚀 快速开始与构建 (Quick Start & Build)
+## English
 
-### 环境需求
-- macOS 13.0 (Ventura) 或更高版本 (支持 macOS 14 Sonoma 与 macOS 15 Sequoia)
-- Apple Silicon (M1/M2/M3/M4) 或 Intel 架构
-- Xcode 15+ 或 Swift 6 工具链
+### Features
 
-### 本地编译与运行
+- **Channel Spectrum Visualization**: Real-time signal strength (RSSI) curves across 2.4 GHz, 5 GHz, and 6 GHz (Wi-Fi 6E / Wi-Fi 7) bands.
+- **Safari-Style Unified Toolbar**: Native macOS toolbar integration with view mode switcher (Spectrum, List, Split View), search filter, and inspector toggle.
+- **Detailed Network Telemetry**: Inspect SSID, BSSID, RSSI, noise floor, signal-to-noise ratio (SNR), channel width (20 / 40 / 80 / 160 MHz), Wi-Fi generation (802.11n / ac / ax / be), and security suites (WPA2, WPA3-SAE).
+- **Data Export**: Export scan results to standard CSV or structured JSON.
+- **Window & Layout Persistence**: Automatically saves and restores window dimensions and sidebar widths.
+- **Lightweight & Native**: Written in 100% Swift 6 with zero third-party dependencies.
+
+### Installation
+
+#### Download Pre-built App
+Download the latest **`WiFiRadar.dmg`** from the [Releases](https://github.com/Z-tar/WiFiRadar/releases) page, open the disk image, and drag `WiFiRadar.app` to your `Applications` folder.
+
+#### Build from Source
+**Requirements:** macOS 13.0 or later, Xcode 15+ or Swift 6 toolchain.
+
 ```bash
 git clone https://github.com/Z-tar/WiFiRadar.git
 cd WiFiRadar
-
-# 一键编译安装至 /Applications/WiFiRadar.app 并生成 DMG/ZIP 分发包
 ./build.sh
 ```
 
----
+The script compiles the release binary, creates `/Applications/WiFiRadar.app`, and packages `WiFiRadar.dmg` and `WiFiRadar.zip` into `~/Downloads/`.
 
-## 🛠️ 项目结构 (Architecture)
+### Project Structure
 
 ```text
 WiFiRadar/
-├── Package.swift                  # Swift Package Manager 配置
-├── build.sh                       # 编译构建与 DMG/ZIP 打包脚本
-├── make_icon.swift                # 原生高清母版图标生成脚本
+├── Package.swift                  # Swift Package Manager manifest
+├── build.sh                       # Build & DMG packaging script
+├── make_icon.swift                # App icon generator
 ├── Resources/
-│   ├── AppIcon.icns               # 官方应用图标
-│   ├── icon_1024.png              # 1024x1024 高清图标母版
-│   └── Info.plist                 # 系统权限与配置
+│   ├── AppIcon.icns               # Application icon
+│   ├── icon_1024.png              # 1024x1024 master icon
+│   └── Info.plist                 # Bundle metadata & permissions
 └── Sources/
-    ├── main.swift                 # 应用程序独立生命周期与主菜单
-    ├── WiFiRadarCore.swift        # CoreWLAN 底层硬件扫描与 120Hz 物理模型
-    └── WiFiRadarView.swift        # Safari 像素级统一顶栏与 SwiftUI 渲染界面
+    ├── main.swift                 # App lifecycle entry point
+    ├── WiFiRadarCore.swift        # CoreWLAN hardware scanning & RF model
+    └── WiFiRadarView.swift        # SwiftUI views & toolbar coordinator
 ```
+
+### License
+
+Released under the [MIT License](LICENSE).
 
 ---
 
-## 📄 开源许可证 (License)
+## 中文
 
-本项目采用 [MIT License](LICENSE) 开源。
+基于 Swift、SwiftUI 与 CoreWLAN 构建的 macOS 原生 Wi-Fi 扫描与信道频谱分析工具。
+
+### 功能特性
+
+- **信道频谱可视化**：实时展示 2.4 GHz、5 GHz 与 6 GHz (Wi-Fi 6E / Wi-Fi 7) 频段的信道占用与信号强度 (RSSI) 曲线。
+- **Safari 风格统一工具栏**：遵循 macOS 原生设计规范，支持视图切换（频谱图、数据列表、混合分屏）、网络搜索过滤与参数检查器抽屉。
+- **详细网络信息**：查看 SSID、BSSID、信号强度 (RSSI)、环境噪声、信噪比 (SNR)、信道频宽 (20 / 40 / 80 / 160 MHz)、Wi-Fi 标准代际 (Wi-Fi 4 / 5 / 6 / 6E / 7) 与安全协议 (WPA2 / WPA3-SAE)。
+- **数据导出**：支持一键导出标准 CSV 格式与完整 JSON 报文。
+- **布局记忆**：自动保存并恢复窗口位置、大小以及侧边栏分栏宽度。
+- **原生轻量**：采用纯 Swift 6 与 SwiftUI 编写，零第三方依赖。
+
+### 安装与运行
+
+#### 下载预编译版本
+前往 [Releases](https://github.com/Z-tar/WiFiRadar/releases) 页面下载 **`WiFiRadar.dmg`**，打开镜像后将 `WiFiRadar.app` 拖入「应用程序」目录即可。
+
+#### 源码编译
+**环境要求**：macOS 13.0 或更高版本，Xcode 15+ 或 Swift 6 工具链。
+
+```bash
+git clone https://github.com/Z-tar/WiFiRadar.git
+cd WiFiRadar
+./build.sh
+```
+
+构建脚本将自动完成 Release 编译，安装应用至 `/Applications/WiFiRadar.app`，并在 `~/Downloads/` 目录下生成 `WiFiRadar.dmg` 与 `WiFiRadar.zip`。
+
+### 开源许可证
+
+本项目采用 [MIT License](LICENSE) 许可证。

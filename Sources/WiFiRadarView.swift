@@ -351,7 +351,7 @@ public class RadarWindowManager: NSObject, NSWindowDelegate {
             backing: .buffered,
             defer: false
         )
-        newWindow.title = "Wi-Fi 深度频谱雷达"
+        newWindow.title = "WiFi Radar"
         newWindow.titleVisibility = .hidden
         newWindow.toolbarStyle = .unified
         newWindow.setFrameAutosaveName("WiFiRadarMainWindowFrame")
@@ -399,7 +399,7 @@ public class RadarWindowManager: NSObject, NSWindowDelegate {
                 try? WiFiRadarScanner.shared.exportCSV().write(to: url, atomically: true, encoding: .utf8)
             }
         } else {
-            panel.title = "导出全息报文数据 (JSON)"
+            panel.title = "导出 Wi-Fi 扫描结果 (JSON)"
             panel.nameFieldStringValue = "WiFi_Telemetry_\(dateStr).json"
             panel.allowedContentTypes = [.json]
             if panel.runModal() == .OK, let url = panel.url {
@@ -1311,7 +1311,7 @@ public struct WiFiRadarView: View {
                 try? scanner.exportCSV().write(to: url, atomically: true, encoding: .utf8)
             }
         } else {
-            panel.title = "导出全息报文数据 (JSON)"
+            panel.title = "导出 Wi-Fi 扫描结果 (JSON)"
             panel.nameFieldStringValue = "WiFi_Telemetry_\(dateStr).json"
             panel.allowedContentTypes = [.json]
             if panel.runModal() == .OK, let url = panel.url {
