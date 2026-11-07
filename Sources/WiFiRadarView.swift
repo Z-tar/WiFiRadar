@@ -110,7 +110,7 @@ public struct SafariCenterCapsuleBar: View {
     public init() {}
 
     private var capsuleBg: Color {
-        colorScheme == .dark ? Color(nsColor: .controlBackgroundColor) : Color.white
+        colorScheme == .dark ? Color.white.opacity(0.08) : Color.white
     }
 
     private var capsuleBorder: Color {
@@ -383,7 +383,7 @@ public class RadarWindowManager: NSObject, NSWindowDelegate {
             backing: .buffered,
             defer: false
         )
-        newWindow.title = "Wi-Fi 深度频谱雷达"
+        newWindow.title = "Wi-Fi 频谱雷达"
         newWindow.titleVisibility = .hidden
         newWindow.toolbarStyle = .unified
         newWindow.setFrameAutosaveName("WiFiRadarMainWindowFrame")
@@ -766,12 +766,12 @@ public struct WiFiRadarView: View {
             .background(
                 Group {
                     if isSelected {
-                        (colorScheme == .dark ? Color.white.opacity(0.12) : Color.white)
+                        (colorScheme == .dark ? Color.accentColor.opacity(0.2) : Color.white)
                             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                             .shadow(color: colorScheme == .dark ? Color.clear : Color.black.opacity(0.06), radius: 3, x: 0, y: 1)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .stroke(colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.06), lineWidth: 0.5)
+                                    .stroke(colorScheme == .dark ? Color.accentColor.opacity(0.3) : Color.black.opacity(0.06), lineWidth: 0.5)
                             )
                             .matchedGeometryEffect(id: "sidebar_active_pill", in: sidebarAnimationNamespace)
                     } else {
@@ -881,6 +881,7 @@ public struct WiFiRadarView: View {
                 HStack(spacing: 6) {
                     Text(net.ssid)
                         .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.primary)
                     Text("ONLINE")
                         .font(.system(size: 9, weight: .heavy))
                         .padding(.horizontal, 5)
@@ -911,13 +912,13 @@ public struct WiFiRadarView: View {
             .overlay(Capsule().stroke(colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.06), lineWidth: 0.5))
         }
         .padding(10)
-        .background(colorScheme == .dark ? Color(nsColor: .controlBackgroundColor) : Color.white)
+        .background(colorScheme == .dark ? Color.white.opacity(0.06) : Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.06), lineWidth: 0.5)
         )
-        .shadow(color: colorScheme == .dark ? Color.black.opacity(0.2) : Color.black.opacity(0.04), radius: 3, x: 0, y: 1)
+        .shadow(color: colorScheme == .dark ? Color.clear : Color.black.opacity(0.04), radius: 3, x: 0, y: 1)
     }
 
     // 频段切换原生分段控件

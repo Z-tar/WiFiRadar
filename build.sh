@@ -39,6 +39,10 @@ echo "APPL????" > "$APP_TARGET/Contents/PkgInfo"
 
 chmod +x "$APP_TARGET/Contents/MacOS/WiFiRadar"
 
+# Codesign bundle so macOS TCC remembers location and system permissions permanently
+echo "🔏 正在对 WiFiRadar.app 进行深度代码签名并固化 Bundle ID..."
+codesign --force --deep --sign - -i "com.ztar.wifiradar" "$APP_TARGET"
+
 /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$APP_TARGET" 2>/dev/null || true
 
 echo "✓ /Applications/WiFiRadar.app 安装就绪"

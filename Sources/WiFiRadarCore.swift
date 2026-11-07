@@ -4,23 +4,43 @@ import CoreLocation
 import SwiftUI
 import Combine
 
-// MARK: - CoreLocation 授权辅助器 (用于 macOS 14+ 深度网络标识解析)
+// MARK: - CoreLocation 授权辅助器 (用于获取当前 Wi-Fi 网络标识)
 public final class WiFiLocationManager: NSObject, CLLocationManagerDelegate, @unchecked Sendable {
     public static let shared = WiFiLocationManager()
     private let manager = CLLocationManager()
-    private var hasRequested: Bool = false
+    private static let authRequestedKey = "WiFiLocationManager_HasRequestedAuth"
+    private var inMemoryRequested: Bool = false
 
     override init() {
         super.init()
         manager.delegate = self
     }
 
-    public func requestAuthorizationIfNeeded() {
-        guard !hasRequested else { return }
-        hasRequested = true
-        if manager.authorizationStatus == .notDetermined {
-            manager.requestWhenInUseAuthorization()
+    public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        let status = manager.authorizationStatus
+        if status != .notDetermined {
+            UserDefaults.standard.set(true, forKey: Self.authRequestedKey)
         }
+    }
+
+    public func requestAuthorizationIfNeeded() {
+        guard !inMemoryRequested else { return }
+        inMemoryRequested = true
+
+        let status = manager.authorizationStatus
+        // 若系统已经处于确定状态（已授权或已拒绝），直接记录并返回，避免重复触发
+        if status != .notDetermined {
+            UserDefaults.standard.set(true, forKey: Self.authRequestedKey)
+            return
+        }
+
+        // 若历史会话已经触发过系统授权请求，绝不在每次启动时反复弹窗骚扰
+        if UserDefaults.standard.bool(forKey: Self.authRequestedKey) {
+            return
+        }
+
+        UserDefaults.standard.set(true, forKey: Self.authRequestedKey)
+        manager.requestWhenInUseAuthorization()
     }
 }
 
