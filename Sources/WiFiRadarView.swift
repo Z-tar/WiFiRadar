@@ -348,6 +348,20 @@ public class RadarWindowManager: NSObject, NSWindowDelegate {
     public static let shared = RadarWindowManager()
     public private(set) var window: NSWindow?
 
+    public var isWindowOpen: Bool {
+        return window != nil && (window?.isVisible ?? false)
+    }
+
+    public func closeWindow() {
+        if let w = window {
+            w.orderOut(nil)
+            w.close()
+            window = nil
+        }
+        WiFiRadarScanner.shared.isViewActive = false
+        WiFiRadarScanner.shared.stopAutoSweep()
+    }
+
     public func openWindow() {
         if let existing = window {
             existing.makeKeyAndOrderFront(nil)
@@ -369,7 +383,7 @@ public class RadarWindowManager: NSObject, NSWindowDelegate {
             backing: .buffered,
             defer: false
         )
-        newWindow.title = "WiFi Radar"
+        newWindow.title = "Wi-Fi 深度频谱雷达"
         newWindow.titleVisibility = .hidden
         newWindow.toolbarStyle = .unified
         newWindow.setFrameAutosaveName("WiFiRadarMainWindowFrame")
@@ -402,6 +416,7 @@ public class RadarWindowManager: NSObject, NSWindowDelegate {
 
     @objc public func windowWillClose(_ notification: Notification) {
         WiFiRadarScanner.shared.isViewActive = false
+        window = nil
     }
 
     public func exportToFile(type: String) {
@@ -417,7 +432,7 @@ public class RadarWindowManager: NSObject, NSWindowDelegate {
                 try? WiFiRadarScanner.shared.exportCSV().write(to: url, atomically: true, encoding: .utf8)
             }
         } else {
-            panel.title = "导出 Wi-Fi 扫描结果 (JSON)"
+            panel.title = "导出全息报文数据 (JSON)"
             panel.nameFieldStringValue = "WiFi_Telemetry_\(dateStr).json"
             panel.allowedContentTypes = [.json]
             if panel.runModal() == .OK, let url = panel.url {
@@ -532,6 +547,7 @@ public extension View {
 public struct WiFiRadarView: View {
     @ObservedObject var scanner = WiFiRadarScanner.shared
     @Namespace private var sidebarAnimationNamespace
+    @Environment(\.colorScheme) var colorScheme
 
     public init() {}
 
@@ -750,16 +766,16 @@ public struct WiFiRadarView: View {
             .background(
                 Group {
                     if isSelected {
-                        Color.white
+                        (colorScheme == .dark ? Color.white.opacity(0.12) : Color.white)
                             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                            .shadow(color: Color.black.opacity(0.06), radius: 3, x: 0, y: 1)
+                            .shadow(color: colorScheme == .dark ? Color.clear : Color.black.opacity(0.06), radius: 3, x: 0, y: 1)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
+                                    .stroke(colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.06), lineWidth: 0.5)
                             )
                             .matchedGeometryEffect(id: "sidebar_active_pill", in: sidebarAnimationNamespace)
                     } else {
-                        Color(nsColor: .controlBackgroundColor).opacity(0.001)
+                        Color.clear
                     }
                 }
             )
@@ -890,16 +906,18 @@ public struct WiFiRadarView: View {
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 4)
-            .background(Color.white)
+            .background(colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.04))
             .clipShape(Capsule())
-            .overlay(Capsule().stroke(Color.black.opacity(0.06), lineWidth: 0.5))
-            .shadow(color: Color.black.opacity(0.04), radius: 2, y: 1)
+            .overlay(Capsule().stroke(colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.06), lineWidth: 0.5))
         }
         .padding(10)
-        .background(Color.white)
+        .background(colorScheme == .dark ? Color(nsColor: .controlBackgroundColor) : Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Color.black.opacity(0.06), lineWidth: 0.5))
-        .shadow(color: Color.black.opacity(0.04), radius: 3, x: 0, y: 1)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.06), lineWidth: 0.5)
+        )
+        .shadow(color: colorScheme == .dark ? Color.black.opacity(0.2) : Color.black.opacity(0.04), radius: 3, x: 0, y: 1)
     }
 
     // 频段切换原生分段控件
@@ -1329,7 +1347,7 @@ public struct WiFiRadarView: View {
                 try? scanner.exportCSV().write(to: url, atomically: true, encoding: .utf8)
             }
         } else {
-            panel.title = "导出 Wi-Fi 扫描结果 (JSON)"
+            panel.title = "导出全息报文数据 (JSON)"
             panel.nameFieldStringValue = "WiFi_Telemetry_\(dateStr).json"
             panel.allowedContentTypes = [.json]
             if panel.runModal() == .OK, let url = panel.url {
