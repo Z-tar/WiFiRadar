@@ -163,6 +163,24 @@ public struct SafariRightActionGroup: View {
 
     public var body: some View {
         HStack(spacing: 6) {
+            // 按钮 0: 暂停 / 恢复扫描 (停止/启动切换)
+            Button(action: {
+                if scanner.isViewActive {
+                    scanner.isViewActive = false
+                    scanner.stopAutoSweep()
+                } else {
+                    scanner.isViewActive = true
+                    scanner.triggerImmediateScan()
+                }
+            }) {
+                Image(systemName: scanner.isViewActive ? "pause.fill" : "play.fill")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(scanner.isViewActive ? .orange : .green)
+                    .frame(width: 28, height: 28)
+            }
+            .buttonStyle(SafariToolbarSquareButtonStyle())
+            .help(scanner.isViewActive ? "暂停/停止扫描" : "恢复自动扫描")
+
             // 按钮 1: 扫描与自动刷新 (点击立即扫描，右键/长按弹出刷新频率)
             Button(action: {
                 scanner.triggerImmediateScan()
@@ -294,7 +312,7 @@ public class RadarToolbarCoordinator: NSObject, NSToolbarDelegate {
         } else if itemIdentifier == rightGroupId {
             let item = NSToolbarItem(itemIdentifier: itemIdentifier)
             let hosting = NSHostingView(rootView: SafariRightActionGroup())
-            hosting.frame = NSRect(x: 0, y: 0, width: 98, height: 28)
+            hosting.frame = NSRect(x: 0, y: 0, width: 132, height: 28)
             item.view = hosting
             item.label = "操作面板"
             return item
